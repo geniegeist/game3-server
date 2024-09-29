@@ -1,0 +1,21 @@
+{
+  "type": "record",
+  "name": "IncMoveExecuted",
+  "namespace": "game3.events.game.log",
+  "doc": "Number was incremented",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "executedBy",
+      "type": "string",
+      "doc": "Id of player who executed the move"
+    },
+    {
+      "name": "gameId",
+      "type": "string"
+    }
+  ]
+}

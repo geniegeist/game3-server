@@ -1,0 +1,18 @@
+{
+  "type": "record",
+  "name": "PrintMessageToClientCommand",
+  "namespace": "game3.events.server.command",
+  "doc": "Command used to print a string on client side",
+  "fields": [
+    {
+      "name": "playerId",
+      "type": "string",
+      "doc": "The player id of the client that shall print the string"
+    },
+    {
+      "name": "message",
+      "type": "string",
+      "doc": "The message to print"
+    }
+  ]
+}

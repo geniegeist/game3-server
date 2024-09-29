@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "name": "GameJoined",
+  "namespace": "game3.events.game.log",
+  "fields": [
+    {
+      "name": "playerId",
+      "type": "string"
+    },
+    {
+      "name": "gameId",
+      "type": "string",
+      "doc": "Id of newly initialized game"
+    }
+  ]
+}

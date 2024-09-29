@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "AuthenticateCommand",
+  "namespace": "game3.events.client.command",
+  "doc": "Command used to authenticate as a player",
+  "fields": [
+    {
+      "name": "playerId",
+      "type": "string",
+      "doc": "The player id to authenticate as"
+    }
+  ]
+}

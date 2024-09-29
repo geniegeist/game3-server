@@ -1,0 +1,19 @@
+{
+  "type": "record",
+  "name": "ViableGameActionsCommand",
+  "namespace": "game3.events.server.command",
+  "doc": "Game actions that the player can execute",
+  "fields": [
+    {
+      "name": "playerId",
+      "type": "string"
+    },
+    {
+      "name": "actions",
+      "type": {
+        "type": "array",
+        "items": "string"
+      }
+    }
+  ]
+}

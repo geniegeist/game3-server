@@ -1,0 +1,31 @@
+{
+  "type": "record",
+  "name": "GameInitialized",
+  "namespace": "game3.events.game.log",
+  "doc": "New game was initialized",
+  "fields": [
+    {
+      "name": "initializedBy",
+      "type": "string",
+      "doc": "Id of player who initialized game"
+    },
+    {
+      "name": "gameId",
+      "type": "string",
+      "doc": "Id of newly initialized game"
+    },
+    {
+      "name": "startingNumber",
+      "type": "int",
+      "doc": "Random starting number"
+    },
+    {
+      "name": "participants",
+      "type": {
+        "type": "array",
+        "items": "string"
+      },
+      "doc": "Id of players that participate in the game"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "type": "record",
+  "name": "NoOpMoveExecuted",
+  "namespace": "game3.events.game.log",
+  "doc": "No operation",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "executedBy",
+      "type": "string",
+      "doc": "Id of player who executed the move"
+    },
+    {
+      "name": "gameId",
+      "type": "string"
+    }
+  ]
+}

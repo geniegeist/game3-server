@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "ClearClientViewCommand",
+  "namespace": "game3.events.server.command",
+  "doc": "Command used to clear the client view",
+  "fields": [
+    {
+      "name": "playerId",
+      "type": "string",
+      "doc": "The player id of the client that shall print the string"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "name": "ExecuteGameMoveCommand",
+  "namespace": "game3.events.client.command",
+  "doc": "Execute game move",
+  "fields": [
+    {
+      "name": "playerId",
+      "type": "string"
+    },
+    {
+      "name": "type",
+      "type": "string"
+    }
+  ]
+}

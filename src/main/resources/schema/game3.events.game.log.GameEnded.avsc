@@ -1,0 +1,17 @@
+{
+  "type": "record",
+  "name": "GameEnded",
+  "namespace": "game3.events.game.log",
+  "doc": "Game ended",
+  "fields": [
+    {
+      "name": "gameId",
+      "type": "string"
+    },
+    {
+      "name": "winner",
+      "type": "string",
+      "doc": "Player id of the winner"
+    }
+  ]
+}

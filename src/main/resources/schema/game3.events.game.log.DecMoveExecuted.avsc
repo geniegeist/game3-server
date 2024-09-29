@@ -1,0 +1,21 @@
+{
+  "type": "record",
+  "name": "DecMoveExecuted",
+  "namespace": "game3.events.game.log",
+  "doc": "Number was decremented",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "executedBy",
+      "type": "string",
+      "doc": "Id of player who executed the move"
+    },
+    {
+      "name": "gameId",
+      "type": "string"
+    }
+  ]
+}
