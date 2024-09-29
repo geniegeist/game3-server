@@ -26,7 +26,7 @@ class KafkaGameSnapshotRepository(
     override fun get(): GameSnapshot<Long> = snapshot ?: create().also { snapshot = it }
 
     override fun create(): GameSnapshot<Long> {
-        val records = gameLogConsumer.fetch(0)
+        val records = gameLogConsumer.fetchFromBeginning()
         val snapshot = findCurrentGameSnapshot(records)
         return snapshot
     }

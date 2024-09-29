@@ -22,12 +22,12 @@ class MessagingConfig {
         private const val BOOTSTRAP_SERVERS = "localhost:9092"
         private const val SCHEMA_REGISTRY_URL = "http://localhost:8085"
 
-        fun kafkaConsumerProps(topic: String? = null): Map<String, Any> {
+        fun kafkaConsumerProps(topic: String? = null, enableAutoCommit: Boolean = true): Map<String, Any> {
             val props = mutableMapOf(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to BOOTSTRAP_SERVERS,
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to "org.apache.kafka.common.serialization.StringDeserializer",
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to "io.confluent.kafka.serializers.KafkaAvroDeserializer",
-                ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to true,
+                ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to enableAutoCommit,
                 "schema.registry.url" to SCHEMA_REGISTRY_URL,
                 KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG to true,
             )

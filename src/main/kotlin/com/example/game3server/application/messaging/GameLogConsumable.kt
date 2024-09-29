@@ -4,5 +4,5 @@ import org.apache.avro.specific.SpecificRecord
 import org.apache.kafka.clients.consumer.ConsumerRecords
 
 interface GameLogConsumable {
-    fun fetch(offset: Int): ConsumerRecords<String, SpecificRecord>
+    fun fetchFromBeginning(): ConsumerRecords<String, SpecificRecord>
 }

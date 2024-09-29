@@ -19,13 +19,13 @@ class GameLogKafkaConsumer() : GameLogConsumable {
     }
 
     private var kafkaConsumer: KafkaConsumer<String, SpecificRecord> = KafkaConsumer<String, SpecificRecord>(kafkaConsumerProps(
-        GROUP_ID))
+        GROUP_ID, enableAutoCommit = false))
 
     init {
         kafkaConsumer.subscribe(listOf(TOPIC))
     }
 
-    override fun fetch(offset: Int): ConsumerRecords<String, SpecificRecord> = kafkaConsumer.poll(Duration.ofMillis(POLL_INTERVAL))
+    override fun fetchFromBeginning(): ConsumerRecords<String, SpecificRecord> = kafkaConsumer.poll(Duration.ofMillis(POLL_INTERVAL))
 
     @PreDestroy
     fun cleanup() {
