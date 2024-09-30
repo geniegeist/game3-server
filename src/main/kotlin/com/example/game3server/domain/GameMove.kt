@@ -129,7 +129,7 @@ data class DecGameMove(
             GameUpdate(
                 updatedGame,
                 listOfNotNull(
-                    PrintMessageViewCommand(executedBy, "🙆‍♀️ You increment: Send (${game.currentNumber} - 1) / 3 = ${updatedGame.currentNumber}"),
+                    PrintMessageViewCommand(executedBy, "🙆‍♀️ You decrement: Send (${game.currentNumber} - 1) / 3 = ${updatedGame.currentNumber}"),
                     PrintMessageViewCommand(otherPlayer, "🤖 Your opponent decremented: Received (${game.currentNumber} - 1) / 3 = ${updatedGame.currentNumber}"),
                     updatedGame.currentNumber?.nextValidMove?.toCommand(otherPlayer)
                 ))
