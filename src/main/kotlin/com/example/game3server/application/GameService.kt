@@ -18,30 +18,40 @@ import game3.events.game.log.*
 import game3.events.server.command.ClearClientViewCommand
 import game3.events.server.command.PrintMessageToClientCommand
 import game3.events.server.command.ViableGameActionsCommand
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 
 @Service
 class GameService(
-    gameSnapshotRepository: GameSnapshotRepository<Long>,
+    private val gameSnapshotRepository: GameSnapshotRepository<Long>,
     private val gameLogListener: GameLogKafkaListener,
     private val clientCommandListener: ClientCommandKafkaListener,
     private val serverCommandSender: ServerCommandKafkaSender,
     private val gameLogSender: GameLogKafkaSender,
+    @Value("\${game.service.auto-start}") val autoStart: Boolean = false,
 ) : GameLogKafkaListenerDelegate, ClientCommandKafkaListenerDelegate {
     private var game: Game = Game.createEmpty()
-    private val snapshot: GameSnapshot<Long> = gameSnapshotRepository.get()
-
-    init {
-        game = snapshot.game
-    }
+    private lateinit var snapshot: GameSnapshot<Long>
 
     @EventListener(ApplicationReadyEvent::class)
     private fun onApplicationEvent(event: ApplicationReadyEvent) {
+        if (autoStart) {
+            start()
+        }
+    }
+
+    fun start() {
+        snapshot = gameSnapshotRepository.get()
+        game = snapshot.game
+
         // do it here to avoid leaking this in init
         gameLogListener.delegate = this
         clientCommandListener.delegate = this
+
+        println("HALLOOOOO")
+        println(snapshot.offset)
 
         gameLogListener.startListening(snapshot.offset)
         clientCommandListener.startListening()
@@ -92,7 +102,22 @@ class GameService(
         } else if (JoinGameMove.canJoin(game, player)) {
             gameLogSender.send(JoinGameMove(executedBy = player).toLog(game))
         } else {
-            TODO("replay everything beginning from first move of game")
+
+            // val shadowGame = Game.createEmpty()
+            // var lastGameCommandsOfPlayer = listOf<Command>()
+
+            // game.moveHistory.fold(shadowGame, { accu, move ->
+            //     val update = move.apply(accu)
+            //     update.commands.filter { it is PrintMessageToClientCommand && it.playerId == command.playerId }.forEach { // handle(it) }
+            //     lastGameCommandsOfPlayer = update.commands
+            //         .filter { (it is IncGameCommand && it.receiver == player) || (it is DecGameCommand && it.receiver == player)//  || (it is NoOpGameCommand && it.receiver == player) }
+            //     update.game
+            // })
+
+            // print(lastGameCommandsOfPlayer)
+
+            //if (lastGameCommandsOfPlayer.isNotEmpty()) handle(lastGameCommandsOfPlayer)
+
         }
     }
 
