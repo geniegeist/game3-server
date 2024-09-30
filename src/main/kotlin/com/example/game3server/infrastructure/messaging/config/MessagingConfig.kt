@@ -1,13 +1,14 @@
 package com.example.game3server.infrastructure.messaging.config
 
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig
-import io.confluent.kafka.serializers.KafkaAvroSerializer
 import io.confluent.kafka.serializers.KafkaAvroSerializerConfig
 import org.apache.avro.specific.SpecificRecord
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.springframework.beans.factory.config.BeanDefinition
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
@@ -16,28 +17,19 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import java.util.*
 
 @Configuration
-class MessagingConfig {
+@EnableConfigurationProperties(MessagingConfig.KafkaConfig::class)
+class MessagingConfig(
+    private val kafkaConfig: KafkaConfig,
+) {
+
+    @ConfigurationProperties(prefix = "kafka")
+    data class KafkaConfig(
+        val bootstrapServers: String
+    )
 
     companion object {
-        private const val BOOTSTRAP_SERVERS = "localhost:9092"
         private const val SCHEMA_REGISTRY_URL = "http://localhost:8085"
 
-        fun kafkaConsumerProps(topic: String? = null, enableAutoCommit: Boolean = true): Map<String, Any> {
-            val props = mutableMapOf(
-                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to BOOTSTRAP_SERVERS,
-                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to "org.apache.kafka.common.serialization.StringDeserializer",
-                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to "io.confluent.kafka.serializers.KafkaAvroDeserializer",
-                ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to enableAutoCommit,
-                "schema.registry.url" to SCHEMA_REGISTRY_URL,
-                KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG to true,
-            )
-
-            if (topic != null) {
-                props[ConsumerConfig.GROUP_ID_CONFIG] = topic
-            }
-
-            return props
-        }
     }
 
     @Bean
@@ -58,6 +50,22 @@ class MessagingConfig {
     fun kafkaSender() = KafkaProducer<String, SpecificRecord>(kafkaSenderProps())
 
 
+    fun kafkaConsumerProps(topic: String? = null, enableAutoCommit: Boolean = true): Map<String, Any> {
+        val props = mutableMapOf(
+            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaConfig.bootstrapServers,
+            ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to "org.apache.kafka.common.serialization.StringDeserializer",
+            ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to "io.confluent.kafka.serializers.KafkaAvroDeserializer",
+            ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to enableAutoCommit,
+            "schema.registry.url" to SCHEMA_REGISTRY_URL,
+            KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG to true,
+        )
+
+        if (topic != null) {
+            props[ConsumerConfig.GROUP_ID_CONFIG] = topic
+        }
+
+        return props
+    }
 
     private fun kafkaSenderProps(): Properties {
         val props = Properties()

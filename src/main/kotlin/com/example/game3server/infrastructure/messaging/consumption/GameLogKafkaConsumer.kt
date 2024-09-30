@@ -1,7 +1,7 @@
 package com.example.game3server.infrastructure.messaging.consumption
 
 import com.example.game3server.application.messaging.GameLogConsumable
-import com.example.game3server.infrastructure.messaging.config.MessagingConfig.Companion.kafkaConsumerProps
+import com.example.game3server.infrastructure.messaging.config.MessagingConfig
 import jakarta.annotation.PreDestroy
 import org.apache.avro.specific.SpecificRecord
 import org.apache.kafka.clients.consumer.ConsumerRecords
@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component
 import java.time.Duration
 
 @Component
-class GameLogKafkaConsumer() : GameLogConsumable {
+class GameLogKafkaConsumer(
+    private val messagingConfig: MessagingConfig
+) : GameLogConsumable {
 
     companion object {
         private const val GROUP_ID = "game-snapshot-log-consumer"
@@ -19,7 +21,7 @@ class GameLogKafkaConsumer() : GameLogConsumable {
         private const val POLL_INTERVAL = 100L
     }
 
-    private var kafkaConsumer: KafkaConsumer<String, SpecificRecord> = KafkaConsumer<String, SpecificRecord>(kafkaConsumerProps(
+    private var kafkaConsumer: KafkaConsumer<String, SpecificRecord> = KafkaConsumer<String, SpecificRecord>(this.messagingConfig.kafkaConsumerProps(
         GROUP_ID, enableAutoCommit = false))
 
     init {
