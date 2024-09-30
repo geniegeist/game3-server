@@ -45,10 +45,11 @@ data class Game(
     val winner: Player?
         get() {
             if (ended) {
-                return moveHistory.findLast { it is IncGameMove || it is DecGameMove }?.let {
+                return moveHistory.findLast { it is IncGameMove || it is DecGameMove || it is NoOpGameMove }?.let {
                     when (it) {
                         is IncGameMove -> it.executedBy
                         is DecGameMove -> it.executedBy
+                        is NoOpGameMove -> it.executedBy
                         else -> throw Exception("Last move is of invalid type")
                     }
                 }
