@@ -32,18 +32,25 @@ class KafkaGameSnapshotRepository(
     }
 
     private fun findCurrentGameSnapshot(records: ConsumerRecords<String, SpecificRecord>): GameSnapshot<Long> {
-        val allEvents = records.toList().map { it.value() }
-        val startingIndex = allEvents.indexOfLast { it is GameInitialized || it is GameEnded }
+        val allEvents = records.toList()
+        val startingIndex = allEvents.indexOfLast { it.value() is GameInitialized || it.value() is GameEnded }
 
         if (startingIndex == -1) return GameSnapshot(Game.createEmpty(), 0)
-        if (allEvents[startingIndex] is GameEnded) return GameSnapshot(Game.createEmpty(), startingIndex.toLong())
 
-        val gameInitialized = allEvents[startingIndex] as GameInitialized
+        val definingEvent = allEvents[startingIndex]
+        gameLogConsumer.commitSync(definingEvent.offset())
+
+        if (definingEvent.value() is GameEnded) {
+            return GameSnapshot(Game.createEmpty(), startingIndex.toLong())
+        }
+
+        val gameInitialized = definingEvent.value() as GameInitialized
         val gameId = gameInitialized.gameId
         val currentGameEvents = allEvents.subList(startingIndex, allEvents.size)
 
         val participants = gameInitialized.participants.map { Player(it) }
         val moveHistory = currentGameEvents
+            .map { it.value() }
             .filter {
                 when (it) {
                     is NoOpMoveExecuted -> it.gameId == gameId

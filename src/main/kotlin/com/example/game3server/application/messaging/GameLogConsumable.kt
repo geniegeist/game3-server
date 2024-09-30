@@ -5,4 +5,5 @@ import org.apache.kafka.clients.consumer.ConsumerRecords
 
 interface GameLogConsumable {
     fun fetchFromBeginning(): ConsumerRecords<String, SpecificRecord>
+    fun commitSync(offset: Long)
 }

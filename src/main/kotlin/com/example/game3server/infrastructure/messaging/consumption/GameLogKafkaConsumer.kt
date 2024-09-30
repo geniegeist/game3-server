@@ -6,6 +6,7 @@ import jakarta.annotation.PreDestroy
 import org.apache.avro.specific.SpecificRecord
 import org.apache.kafka.clients.consumer.ConsumerRecords
 import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.clients.consumer.OffsetAndMetadata
 import org.springframework.stereotype.Component
 import java.time.Duration
 
@@ -26,6 +27,13 @@ class GameLogKafkaConsumer() : GameLogConsumable {
     }
 
     override fun fetchFromBeginning(): ConsumerRecords<String, SpecificRecord> = kafkaConsumer.poll(Duration.ofMillis(POLL_INTERVAL))
+
+    override fun commitSync(offset: Long) {
+        val topicPartitionToOffset = kafkaConsumer.assignment()
+            .map { it to OffsetAndMetadata(offset) }
+            .associateBy({ it.first }, { it.second })
+        kafkaConsumer.commitSync(topicPartitionToOffset)
+    }
 
     @PreDestroy
     fun cleanup() {
