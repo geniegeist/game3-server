@@ -6,6 +6,7 @@ import org.apache.avro.specific.SpecificRecord
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.clients.producer.ProducerConfig
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -24,13 +25,9 @@ class MessagingConfig(
 
     @ConfigurationProperties(prefix = "kafka")
     data class KafkaConfig(
-        val bootstrapServers: String
+        val bootstrapServers: String,
+        val schemaRegistryUrl: String
     )
-
-    companion object {
-        private const val SCHEMA_REGISTRY_URL = "http://localhost:8085"
-
-    }
 
     @Bean
     fun consumerFactory() = DefaultKafkaConsumerFactory<String, SpecificRecord>(kafkaConsumerProps())
@@ -56,7 +53,7 @@ class MessagingConfig(
             ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to "org.apache.kafka.common.serialization.StringDeserializer",
             ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to "io.confluent.kafka.serializers.KafkaAvroDeserializer",
             ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG to enableAutoCommit,
-            "schema.registry.url" to SCHEMA_REGISTRY_URL,
+            KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG to kafkaConfig.schemaRegistryUrl,
             KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG to true,
         )
 
@@ -67,12 +64,12 @@ class MessagingConfig(
         return props
     }
 
-    private fun kafkaSenderProps(): Properties {
+    fun kafkaSenderProps(): Properties {
         val props = Properties()
-        props["bootstrap.servers"] = "localhost:9092"
-        props["key.serializer"] = "org.apache.kafka.common.serialization.StringSerializer"
-        props["value.serializer"] = "io.confluent.kafka.serializers.KafkaAvroSerializer"
-        props["schema.registry.url"] = "http://localhost:8085"
+        props[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = kafkaConfig.bootstrapServers
+        props[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = "org.apache.kafka.common.serialization.StringSerializer"
+        props[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = "io.confluent.kafka.serializers.KafkaAvroSerializer"
+        KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG to kafkaConfig.schemaRegistryUrl
         props[KafkaAvroSerializerConfig.VALUE_SUBJECT_NAME_STRATEGY] = "io.confluent.kafka.serializers.subject.TopicRecordNameStrategy"
         return props
     }
